@@ -66,6 +66,22 @@ const userController = {
     }
   },
   
+  async deleteUser(req, res) {
+    try {
+      const dbUserData = await User.findOneAndDelete({ _id: req.params.userId })
+
+      if (!dbUserData) {
+        return res.status(404).json({ message: 'No user with this id!' });
+      }
+
+     
+      await Thought.deleteMany({ _id: { $in: dbUserData.thoughts } });
+      res.json({ message: 'User and associated thoughts deleted!' });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
+  },
   
 
   async addFriend(req, res) {
